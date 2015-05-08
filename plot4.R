@@ -1,0 +1,20 @@
+library(dplyr)
+data <- read.table("hsepwrcomp.txt", header = TRUE, sep=";", na.strings="?")
+data$Date <- as.Date(data$Date, "%d/%m/%Y")
+output <- subset(data, Date == "2007-02-01" | Date == "2007-02-02")
+output$row.names <- paste(output$Date, output$Time)
+output$row.names <- as.POSIXlt(output$row.names)
+png(filename = "plot4.png", width = 480, height = 480)
+par(mfrow = c(2,2))
+with( output, {
+  plot(output$row.names, output$Global_active_power, type = "l", xlab = "", ylab = "Global Active Power")
+  plot(output$row.names, output$Voltage, type = "l", xlab = "datetime", ylab = "Voltage")
+  plot(output$row.names, output$Sub_metering_1, type = "l", xlab = "", ylab = "Energy sub metering")
+  lines(output$row.names, output$Sub_metering_2, col="red")
+  lines(output$row.names, output$Sub_metering_3, col="blue")
+  legend("topright", cex=1, bty = "n", col = c("black", "red", "blue"), lty = 1, legend = c("Sub_metering_1",
+                                                                                            "Sub_metering_2",
+                                                                                            "Sub_metering_3"))
+  plot(output$row.names, output$Global_reactive_power, type = "l", xlab = "datetime", ylab = "Global_reactive_power")
+})
+dev.off()
